@@ -7,7 +7,7 @@ services:
   - id: quantum-detector
     type: hybrid-service
     source:
-      repository: https://github.com/DavidWindmill/quantum-anomaly-detector-service.git
+      repository: https://github.com/GITHUB_OWNER/quantum-anomaly-detector-service.git
       revision: main
       dockerfile: Dockerfile
     deployment:
@@ -23,7 +23,7 @@ services:
   - id: aggregator
     type: classical-service
     source:
-      repository: https://github.com/DavidWindmill/incubator-aggregator-service.git
+      repository: https://github.com/GITHUB_OWNER/incubator-aggregator-service.git
       revision: main
       dockerfile: Dockerfile
     deployment:
@@ -47,7 +47,7 @@ services:
   - id: sensor-left
     type: classical-service
     source:
-      repository: https://github.com/DavidWindmill/incubator-sensor-service.git
+      repository: https://github.com/GITHUB_OWNER/incubator-sensor-service.git
       revision: main
       dockerfile: Dockerfile
     deployment:
@@ -67,7 +67,7 @@ services:
   - id: sensor-center
     type: classical-service
     source:
-      repository: https://github.com/DavidWindmill/incubator-sensor-service.git
+      repository: https://github.com/GITHUB_OWNER/incubator-sensor-service.git
       revision: main
       dockerfile: Dockerfile
     deployment:
@@ -87,7 +87,7 @@ services:
   - id: sensor-right
     type: classical-service
     source:
-      repository: https://github.com/DavidWindmill/incubator-sensor-service.git
+      repository: https://github.com/GITHUB_OWNER/incubator-sensor-service.git
       revision: main
       dockerfile: Dockerfile
     deployment:

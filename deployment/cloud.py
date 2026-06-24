@@ -72,7 +72,13 @@ def cloud_up(
                 environment[key] = urls[value["from_service"]]
             else:
                 environment[key] = str(value)
-        environment.setdefault("PORT", "8080")
+        # Cloud Run inyecta PORT automáticamente. No debe enviarse como variable.
+        reserved_env = {"PORT", "K_SERVICE", "K_REVISION", "K_CONFIGURATION"}
+        environment = {
+            key: value
+            for key, value in environment.items()
+            if key not in reserved_env
+        }
 
         command = [
             "gcloud", "run", "deploy", deployment["service_name"],
@@ -86,9 +92,13 @@ def cloud_up(
             "--min-instances", str(deployment.get("min_instances", 0)),
             "--max-instances", str(deployment.get("max_instances", 1)),
             "--concurrency", str(deployment.get("concurrency", 80)),
-            "--set-env-vars", ",".join(f"{k}={v}" for k, v in environment.items()),
             "--quiet",
         ]
+        if environment:
+            command.extend([
+                "--set-env-vars",
+                ",".join(f"{k}={v}" for k, v in environment.items()),
+            ])
         if deployment.get("public", True):
             command.append("--allow-unauthenticated")
         else:

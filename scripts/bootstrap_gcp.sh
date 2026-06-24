@@ -21,6 +21,7 @@ done
 
 DEPLOYER_EMAIL="$DEPLOYER_SA@$PROJECT_ID.iam.gserviceaccount.com"
 RUNTIME_EMAIL="$RUNTIME_SA@$PROJECT_ID.iam.gserviceaccount.com"
+DEFAULT_BUILD_SA="$(gcloud builds get-default-service-account --project "$PROJECT_ID")"
 for role in   roles/run.admin   roles/artifactregistry.writer   roles/cloudbuild.builds.editor   roles/logging.logWriter   roles/serviceusage.serviceUsageConsumer; do
   gcloud projects add-iam-policy-binding "$PROJECT_ID"     --member "serviceAccount:$DEPLOYER_EMAIL"     --role "$role" >/dev/null
 done
