@@ -72,8 +72,13 @@ def cloud_up(
                 environment[key] = urls[value["from_service"]]
             else:
                 environment[key] = str(value)
-        # Cloud Run inyecta PORT automáticamente. No debe enviarse como variable.
-        reserved_env = {"PORT", "K_SERVICE", "K_REVISION", "K_CONFIGURATION"}
+        # Cloud Run inyecta PORT automáticamente.
+        reserved_env = {
+            "PORT",
+            "K_SERVICE",
+            "K_REVISION",
+            "K_CONFIGURATION",
+        }
         environment = {
             key: value
             for key, value in environment.items()
@@ -94,6 +99,7 @@ def cloud_up(
             "--concurrency", str(deployment.get("concurrency", 80)),
             "--quiet",
         ]
+
         if environment:
             command.extend([
                 "--set-env-vars",
