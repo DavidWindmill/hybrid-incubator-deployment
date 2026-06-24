@@ -1,0 +1,30 @@
+steps:
+  - name: python:3.12-slim
+    id: validate-specification
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        pip install --no-cache-dir -r requirements.txt
+        python -m deployment.cli validate --spec specifications/application.cloud.yaml
+
+  - name: gcr.io/google.com/cloudsdktool/google-cloud-cli:slim
+    id: deploy-application
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        apt-get update
+        apt-get install -y --no-install-recommends git python3-pip
+        pip3 install --break-system-packages --no-cache-dir -r requirements.txt
+        python3 -m deployment.cli cloud-up           --spec specifications/application.cloud.yaml           --project "$PROJECT_ID"           --region "${_REGION}"           --artifact-repository "${_ARTIFACT_REPOSITORY}"           --runtime-service-account "${_RUNTIME_SERVICE_ACCOUNT}"
+        python3 scripts/run_demo.py           --env-file .deployment/cloud-deployment.env           --timeout 300
+
+substitutions:
+  _REGION: europe-southwest1
+  _ARTIFACT_REPOSITORY: incubadora-quantum
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 3600s

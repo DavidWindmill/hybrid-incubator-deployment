@@ -1,0 +1,95 @@
+application:
+  id: incubadora-hibrida-local
+  name: Incubadora híbrida cuántico-clásica
+  version: "1.0"
+
+services:
+  - id: quantum-detector
+    type: hybrid-service
+    source:
+      local_path: ../../quantum-anomaly-detector-service
+      dockerfile: Dockerfile
+    deployment:
+      service_name: incubator-quantum-detector
+      image_name: quantum-anomaly-detector
+      public_port: 8001
+      cpu: "1"
+      memory: 1Gi
+      max_instances: 1
+
+  - id: aggregator
+    type: classical-service
+    source:
+      local_path: ../../incubator-aggregator-service
+      dockerfile: Dockerfile
+    deployment:
+      service_name: incubator-aggregator
+      image_name: incubator-aggregator
+      public_port: 8000
+      cpu: "1"
+      memory: 512Mi
+      max_instances: 1
+      concurrency: 1
+    environment:
+      DETECTOR_URL:
+        from_service: quantum-detector
+      SAFE_MIN_C: "37.0"
+      SAFE_MAX_C: "38.0"
+      BATCH_SIZE: "8"
+      SHOTS: "2048"
+      REQUEST_TIMEOUT_SECONDS: "240"
+
+  - id: sensor-left
+    type: classical-service
+    source:
+      local_path: ../../incubator-sensor-service
+      dockerfile: Dockerfile
+    deployment:
+      service_name: incubator-sensor-left
+      image_name: incubator-sensor
+      public_port: 8101
+    environment:
+      SENSOR_ID: temperature-sensor-1
+      SENSOR_ZONE: izquierda
+      AGGREGATOR_URL:
+        from_service: aggregator
+      REQUEST_TIMEOUT_SECONDS: "240"
+
+  - id: sensor-center
+    type: classical-service
+    source:
+      local_path: ../../incubator-sensor-service
+      dockerfile: Dockerfile
+    deployment:
+      service_name: incubator-sensor-center
+      image_name: incubator-sensor
+      public_port: 8102
+    environment:
+      SENSOR_ID: temperature-sensor-2
+      SENSOR_ZONE: centro
+      AGGREGATOR_URL:
+        from_service: aggregator
+      REQUEST_TIMEOUT_SECONDS: "240"
+
+  - id: sensor-right
+    type: classical-service
+    source:
+      local_path: ../../incubator-sensor-service
+      dockerfile: Dockerfile
+    deployment:
+      service_name: incubator-sensor-right
+      image_name: incubator-sensor
+      public_port: 8103
+    environment:
+      SENSOR_ID: temperature-sensor-3
+      SENSOR_ZONE: derecha
+      AGGREGATOR_URL:
+        from_service: aggregator
+      REQUEST_TIMEOUT_SECONDS: "240"
+
+outputs:
+  DETECTOR_URL: quantum-detector
+  AGGREGATOR_URL: aggregator
+  SENSOR_LEFT_URL: sensor-left
+  SENSOR_CENTER_URL: sensor-center
+  SENSOR_RIGHT_URL: sensor-right
